@@ -34,6 +34,7 @@ namespace SynetecAssessmentApi
             dbContextOptionBuilder.UseInMemoryDatabase(databaseName: "HrDb");
             
             services.AddSingleton<IDbFactory>(new DbFactory(dbContextOptionBuilder.Options));
+            services.AddScoped<IBonusCalculator, BonusCalculator>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

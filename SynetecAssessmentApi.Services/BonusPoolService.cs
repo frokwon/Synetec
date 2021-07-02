@@ -1,5 +1,6 @@
 ﻿using SynetecAssessmentApi.Persistence.Dtos;
 using SynetecAssessmentApi.Persistence.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +17,13 @@ namespace SynetecAssessmentApi.Services
     {
         private readonly IEmployeeRepository EmployeeRepository;
         private readonly IDepartmentRepository DepartmentRepository;
+        private readonly IBonusCalculator BonusCalculator;
 
-        public BonusPoolService(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
+        public BonusPoolService(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository, IBonusCalculator bonusCalculator)
         {
             EmployeeRepository = employeeRepository;
             DepartmentRepository = departmentRepository;
+            BonusCalculator = bonusCalculator;
         }
 
         public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync()
@@ -54,12 +57,11 @@ namespace SynetecAssessmentApi.Services
 
             var employee = allEmployees.FirstOrDefault(item => item.Id == selectedEmployeeId);
 
+            if (employee == null)
+                throw new ArgumentException("Invalid employee id passed : " + selectedEmployeeId);
+
             //get the total salary budget for the company
             int totalSalary = allEmployees.Sum(item => item.Salary);
-
-            //calculate the bonus allocation for the employee
-            decimal bonusPercentage = (decimal)employee.Salary / (decimal)totalSalary;
-            int bonusAllocation = (int)(bonusPercentage * bonusPoolAmount);
 
             return new BonusPoolCalculatorResultDto
             {
@@ -75,7 +77,7 @@ namespace SynetecAssessmentApi.Services
                     }
                 },
 
-                Amount = bonusAllocation
+                Amount = BonusCalculator.CalculateBonus(employee.Salary, totalSalary, bonusPoolAmount)
             };
         }
     }

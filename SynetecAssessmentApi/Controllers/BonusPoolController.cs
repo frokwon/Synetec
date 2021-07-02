@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SynetecAssessmentApi.Persistence.Dtos;
 using SynetecAssessmentApi.Services;
+using System;
 using System.Threading.Tasks;
 
 namespace SynetecAssessmentApi.Controllers
@@ -22,9 +23,19 @@ namespace SynetecAssessmentApi.Controllers
         [HttpPost()]
         public async Task<IActionResult> CalculateBonus([FromBody] CalculateBonusDto request)
         {
-            return Ok(await BonusPoolService.CalculateAsync(
-                request.TotalBonusPoolAmount,
-                request.SelectedEmployeeId));
+            try
+            {
+                if (request == null)
+                    throw new ArgumentException("Invalid parameters supplied");
+
+                return Ok(await BonusPoolService.CalculateAsync(
+                    request.TotalBonusPoolAmount,
+                    request.SelectedEmployeeId));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
