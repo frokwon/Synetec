@@ -25,7 +25,7 @@ namespace SynetecAssessmentApi.Services
 
         public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync()
         {
-            var employees = EmployeeRepository.GetAll().ToList();
+            var employees = await EmployeeRepository.GetEmployeesAsync();
 
             List<EmployeeDto> result = new List<EmployeeDto>();
 
@@ -50,7 +50,7 @@ namespace SynetecAssessmentApi.Services
 
         public async Task<BonusPoolCalculatorResultDto> CalculateAsync(int bonusPoolAmount, int selectedEmployeeId)
         {
-            var allEmployees = EmployeeRepository.GetAll().ToList();
+            var allEmployees = await EmployeeRepository.GetEmployeesAsync();
 
             var employee = allEmployees.FirstOrDefault(item => item.Id == selectedEmployeeId);
 
