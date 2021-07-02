@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SynetecAssessmentApi.Domain;
-using SynetecAssessmentApi.Dtos;
-using SynetecAssessmentApi.Persistence;
+﻿using SynetecAssessmentApi.Persistence.Dtos;
+using SynetecAssessmentApi.Persistence.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,22 +8,18 @@ namespace SynetecAssessmentApi.Services
 {
     public class BonusPoolService
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IEmployeeRepository EmployeeRepository;
+        private readonly IDepartmentRepository DepartmentRepository;
 
-        public BonusPoolService()
+        public BonusPoolService(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
         {
-            var dbContextOptionBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            dbContextOptionBuilder.UseInMemoryDatabase(databaseName: "HrDb");
-
-            _dbContext = new AppDbContext(dbContextOptionBuilder.Options);
+            EmployeeRepository = employeeRepository;
+            DepartmentRepository = departmentRepository;
         }
 
         public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync()
         {
-            IEnumerable<Employee> employees = await _dbContext
-                .Employees
-                .Include(e => e.Department)
-                .ToListAsync();
+            var employees = EmployeeRepository.GetAll().ToList();
 
             List<EmployeeDto> result = new List<EmployeeDto>();
 
@@ -50,13 +44,12 @@ namespace SynetecAssessmentApi.Services
 
         public async Task<BonusPoolCalculatorResultDto> CalculateAsync(int bonusPoolAmount, int selectedEmployeeId)
         {
-            //load the details of the selected employee using the Id
-            Employee employee = await _dbContext.Employees
-                .Include(e => e.Department)
-                .FirstOrDefaultAsync(item => item.Id == selectedEmployeeId);
+            var allEmployees = EmployeeRepository.GetAll().ToList();
+
+            var employee = allEmployees.FirstOrDefault(item => item.Id == selectedEmployeeId);
 
             //get the total salary budget for the company
-            int totalSalary = (int)_dbContext.Employees.Sum(item => item.Salary);
+            int totalSalary = allEmployees.Sum(item => item.Salary);
 
             //calculate the bonus allocation for the employee
             decimal bonusPercentage = (decimal)employee.Salary / (decimal)totalSalary;

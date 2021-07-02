@@ -1,4 +1,4 @@
-﻿namespace SynetecAssessmentApi.Dtos
+﻿namespace SynetecAssessmentApi.Persistence.Dtos
 {
     public class EmployeeDto
     {
