@@ -6,10 +6,15 @@ namespace SynetecAssessmentApi.Persistence.Infrastructure
     public class DbFactory : Disposable, IDbFactory
     {
         AppDbContext dbContext;
-        DbContextOptions<AppDbContext> options;
+        DbContextOptions<AppDbContext> Options;
+
+        public DbFactory(DbContextOptions<AppDbContext> options)
+        {
+            Options = options;
+        }
         public AppDbContext Init()
         {
-            return dbContext ?? (dbContext = new AppDbContext(options));
+            return dbContext ?? (dbContext = new AppDbContext(Options));
         }
 
         protected override void DisposeCore()

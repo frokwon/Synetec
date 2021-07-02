@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SynetecAssessmentApi.Dtos;
+using SynetecAssessmentApi.Persistence.Dtos;
 using SynetecAssessmentApi.Services;
 using System.Threading.Tasks;
 
@@ -8,20 +8,21 @@ namespace SynetecAssessmentApi.Controllers
     [Route("api/[controller]")]
     public class BonusPoolController : Controller
     {
+        private readonly IBonusPoolService BonusPoolService;
+        public BonusPoolController(IBonusPoolService bonusPoolService)
+        {
+            BonusPoolService = bonusPoolService;
+        }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var bonusPoolService = new BonusPoolService();
-
-            return Ok(await bonusPoolService.GetEmployeesAsync());
+            return Ok(await BonusPoolService.GetEmployeesAsync());
         }
 
         [HttpPost()]
         public async Task<IActionResult> CalculateBonus([FromBody] CalculateBonusDto request)
         {
-            var bonusPoolService = new BonusPoolService();
-
-            return Ok(await bonusPoolService.CalculateAsync(
+            return Ok(await BonusPoolService.CalculateAsync(
                 request.TotalBonusPoolAmount,
                 request.SelectedEmployeeId));
         }

@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace SynetecAssessmentApi.Services
 {
-    public class BonusPoolService
+    public interface IBonusPoolService
+    {
+        Task<BonusPoolCalculatorResultDto> CalculateAsync(int bonusPoolAmount, int selectedEmployeeId);
+        Task<IEnumerable<EmployeeDto>> GetEmployeesAsync();
+    }
+
+    public class BonusPoolService : IBonusPoolService
     {
         private readonly IEmployeeRepository EmployeeRepository;
         private readonly IDepartmentRepository DepartmentRepository;

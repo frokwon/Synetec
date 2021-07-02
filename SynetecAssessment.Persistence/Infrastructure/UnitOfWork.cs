@@ -16,7 +16,7 @@ namespace SynetecAssessmentApi.Persistence.Infrastructure
             this.dbFactory = dbFactory;
         }
 
-        public AppContext DbContext
+        public AppDbContext DbContext
         {
             get { return dbContext ?? (dbContext = dbFactory.Init()); }
         }

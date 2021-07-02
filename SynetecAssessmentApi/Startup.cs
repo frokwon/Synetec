@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SynetecAssessmentApi.Persistence;
+using SynetecAssessmentApi.Persistence.Infrastructure;
+using SynetecAssessmentApi.Persistence.Repositories;
+using SynetecAssessmentApi.Services;
 
 namespace SynetecAssessmentApi
 {
@@ -26,6 +29,15 @@ namespace SynetecAssessmentApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SynetecAssessmentApi", Version = "v1" });
             });
+
+            var dbContextOptionBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            dbContextOptionBuilder.UseInMemoryDatabase(databaseName: "HrDb");
+            
+            services.AddSingleton<IDbFactory>(new DbFactory(dbContextOptionBuilder.Options));
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IBonusPoolService, BonusPoolService>();
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseInMemoryDatabase(databaseName: "HrDb"));

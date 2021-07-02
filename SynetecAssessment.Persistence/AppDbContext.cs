@@ -13,6 +13,10 @@ namespace SynetecAssessmentApi.Persistence
             : base(options)
         { }
 
+        public virtual void Commit()
+        {
+            base.SaveChanges();
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
